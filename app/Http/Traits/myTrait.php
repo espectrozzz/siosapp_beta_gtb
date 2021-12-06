@@ -14,7 +14,7 @@ trait myTrait{
 function enviarScript($id, $peticion){
     $analisis = d_analisi::findOrFail($id);
 
-    $consulta = d_analisi::select('d_analisis.folio','c_tipo_folios.descripcion as tfolio','d_analisis.ot','c_distritos.descripcion as distrito',
+    $consulta = d_analisi::select('d_analisis.folio', 'd_analisis.distrito_id', 'c_tipo_folios.descripcion as tfolio','d_analisis.ot','c_distritos.descripcion as distrito',
     'c_clusters.descripcion as cluster','d_analisis.olt','d_analisis.clientes_afectados as nCliente',
     'c_fallas.descripcion as falla','d_calc_tiempos.asignacion_ios as fechaIos','d_calc_tiempos.llegada',
     'd_ubicaciones.latitud','d_ubicaciones.longitud','c_causas.descripcion as causa','d_analisis.id',
@@ -107,8 +107,17 @@ $bddUbicacion->save();
             $token = 'bkpfz0iwcv75iy24';
             $instanceId = '257923';
             $url = 'https://api.chat-api.com/instance'.$instanceId.'/message?token='.$token;
-
-            $grupos=["5215519544903-1618948843@g.us","5215530183957-1612547719@g.us"];
+        switch($consulta[0]->distrito_id){
+            case 1: 
+                    $grupos=["5215519544903-1618948843@g.us", "120363038953215563@g.us"];
+                    break;
+            case 3: 
+                    $grupos=["5215519544903-1618948843@g.us", "120363039382573270@g.us"];
+                    break;
+            case 4: 
+                    $grupos=["5215519544903-1618948843@g.us", "120363022603175064@g.us"];
+        }
+            
          $i = 0;
          foreach($grupos as $valor){
                 $data = [

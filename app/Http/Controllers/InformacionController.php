@@ -15,16 +15,12 @@ use App\Models\d_coo_daño;
 use App\Models\d_pausado;
 use App\Models\d_seguimiento;
 use App\Models\d_ubicacione;
-use App\Notifications\tecnicoNotification;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManagerStatic as Image;
 
 class InformacionController extends Controller
 {
     public function envio_correctivo(CorrectivoFormRequest $request){
       
-       
         $analisis=new d_analisi;
         $analisis->folio = $request->folio;
         $analisis->tfolio_id = $request->tFolio;
@@ -44,7 +40,7 @@ class InformacionController extends Controller
         if($request->olt != null || $request->olt != ''){
             $analisis->olt                  =   $request->olt;
         }
-        if($request->ot != null || $request->ot != ''){
+        if($request->ot){
             $analisis->OT                   =   $request->ot;
         }
         if($request->hora_eta == null || $request->hora_eta == ''){
@@ -159,96 +155,96 @@ class InformacionController extends Controller
     }
 
     public function envio_preventivo(PreventivoFormRequest $request){
-    //     $analisis=new d_analisi;
-    //     $analisis->folio = $request->folio;
-    //     $analisis->tfolio_id = $request->tFolio;
-    //     $analisis->turno_id = $request->turno;
-    //     $analisis->distrito_id = $request->distrito_id;
-    //     $analisis->cluster_id = $request->cluster;
-    //     $analisis->user_id = auth()->id();
-    //     $analisis->falla_id = $request->falla;
-    //     $analisis->potencia_inicial     =   $request->poIni;
-    //     $analisis->potencia_final       =   $request->poFin;
-    //     $analisis->hora_medicion        =   $request->hraMedicion;
-    //     $analisis->causa_id = $request->cAfectacion;
-    //     $analisis->clientes_afectados = $request->nClientes;
-    //     $analisis->despacho_id = $request->despachoIos;
-    //     $analisis->supervisor_id = $request->supervisorTTP;
-    //     $analisis->tecnico_id = $request->tecnicoIos;
-    //     $analisis->estatus_id = 1;
-    //     $analisis->tipo_folio = 2;
-    //     if($request->olt != null || $request->olt != ''){
-    //         $analisis->olt                  =   $request->olt;
-    //     }
-    //     if($request->ot != null || $request->ot != ''){
-    //         $analisis->OT                   =   $request->ot;
-    //     }
-    //     if($request->hora_eta == null || $request->hora_eta == ''){
-    //         $analisis->estatus_id = 1;
-    //     }
-    //     if($request->hora_eta != null || $request->hora_eta != ''){
-    //         $analisis->estatus_id = 2;
-    //     }
-    //     if($request->hora_sla != null || $request->hora_sla != ''){
-    //         $analisis->estatus_id = 4;
-    //     }
-    //     $analisis->save();
+        $analisis=new d_analisi;
+        $analisis->folio = $request->folio;
+        $analisis->tfolio_id = $request->tFolio;
+        $analisis->turno_id = $request->turno;
+        $analisis->distrito_id = $request->distrito_id;
+        $analisis->cluster_id = $request->cluster;
+        $analisis->user_id = auth()->id();
+        $analisis->falla_id = $request->falla;
+        $analisis->potencia_inicial     =   $request->poIni;
+        $analisis->potencia_final       =   $request->poFin;
+        $analisis->hora_medicion        =   $request->hraMedicion;
+        $analisis->causa_id = $request->cAfectacion;
+        $analisis->clientes_afectados = $request->nClientes;
+        $analisis->despacho_id = $request->despachoIos;
+        $analisis->supervisor_id = $request->supervisorTTP;
+        $analisis->tecnico_id = $request->tecnicoIos;
+        $analisis->estatus_id = 1;
+        $analisis->tipo_folio = 2;
+        if($request->olt != null || $request->olt != ''){
+            $analisis->olt                  =   $request->olt;
+        }
+        if($request->ot){
+            $analisis->OT                   =   $request->ot;
+        }
+        if($request->hora_eta == null || $request->hora_eta == ''){
+            $analisis->estatus_id = 1;
+        }
+        if($request->hora_eta != null || $request->hora_eta != ''){
+            $analisis->estatus_id = 2;
+        }
+        if($request->hora_sla != null || $request->hora_sla != ''){
+            $analisis->estatus_id = 4;
+        }
+        $analisis->save();
 
-    //     $folioid = $analisis->id;
+        $folioid = $analisis->id;
 
-    //     $calctiempo=new d_calc_tiempo;
-    //     $calctiempo->folio_id = $folioid;
-    //     $calctiempo->asignacion_ios = $request->fechaIos;
-    //     $calctiempo->llegada = $request->llegadaFolio;
-    //     $calctiempo->activacion = $request->activacionFolio;
-    //     $calctiempo->eta = $request->hora_eta;
-    //     $calctiempo->sla = $request->hora_sla;
-    //     $calctiempo->estado_id = 1;
-    //     $calctiempo->save();
+        $calctiempo=new d_calc_tiempo;
+        $calctiempo->folio_id = $folioid;
+        $calctiempo->asignacion_ios = $request->fechaIos;
+        $calctiempo->llegada = $request->llegadaFolio;
+        $calctiempo->activacion = $request->activacionFolio;
+        $calctiempo->eta = $request->hora_eta;
+        $calctiempo->sla = $request->hora_sla;
+        $calctiempo->estado_id = 1;
+        $calctiempo->save();
 
-    //     if($request->fPausado != null || $request->fPausado != '')
-    //     {
-    //         $folioPausado = new d_pausado;
-    //         $folioPausado->folio_id = $folioid;
-    //         $folioPausado->justificacion_id = $request->fPausado;
-    //         $folioPausado->tiempo_muerto = $request->tiempoMuerto;
-    //         $folioPausado->estado_id = 1;
-    //         $folioPausado->save();
-    //     }
-    //     if($request->cab24 != null || $request->cab24 != ''){
-    //         $array_num = count($request->cab24);
-    //         for ($i = 0; $i < $array_num; ++$i){
-    //             $cab24 = new d_coo_daño;
-    //             $cab24->folio_id    =   $folioid;
-    //             $cab24->coordenadas =   $request->cab24[$i];
-    //             $cab24->save();
-    //         }
-    //     }
+        if($request->fPausado != null || $request->fPausado != '')
+        {
+            $folioPausado = new d_pausado;
+            $folioPausado->folio_id = $folioid;
+            $folioPausado->justificacion_id = $request->fPausado;
+            $folioPausado->tiempo_muerto = $request->tiempoMuerto;
+            $folioPausado->estado_id = 1;
+            $folioPausado->save();
+        }
+        if($request->cab24 != null || $request->cab24 != ''){
+            $array_num = count($request->cab24);
+            for ($i = 0; $i < $array_num; ++$i){
+                $cab24 = new d_coo_daño;
+                $cab24->folio_id    =   $folioid;
+                $cab24->coordenadas =   $request->cab24[$i];
+                $cab24->save();
+            }
+        }
     
-    // if($request->latitud != '' && $request->longitud != '')
-    //     { 
-    //         $ubicacion = new d_ubicacione;
-    //         $ubicacion->folio_id = $folioid;
-    //         $ubicacion->latitud = $request->latitud;
-    //         $ubicacion->longitud = $request->longitud;
-    //         $ubicacion->estado_id = 1;
-    //         $ubicacion->save();
-    //     }
+    if($request->latitud != '' && $request->longitud != '')
+        { 
+            $ubicacion = new d_ubicacione;
+            $ubicacion->folio_id = $folioid;
+            $ubicacion->latitud = $request->latitud;
+            $ubicacion->longitud = $request->longitud;
+            $ubicacion->estado_id = 1;
+            $ubicacion->save();
+        }
 
 
-    //     if($request->material != null || $request->material != ''){
-    //             $array_num = count($request->material);
-    //             for ($i = 0; $i < $array_num; ++$i){
-    //                 if($request->material[$i]!='sinMaterial'){
-    //                 d_materiale::create([
-    //                     'folio_id' => $folioid,
-    //                     'material_id' => $request->material[$i],
-    //                     'cantidad' => $request->material_can[$i],
-    //                     'estado_id' => 1,
-    //                     ]);
-    //                 }
-    //             }
-    //     }
+        if($request->material != null || $request->material != ''){
+                $array_num = count($request->material);
+                for ($i = 0; $i < $array_num; ++$i){
+                    if($request->material[$i]!='sinMaterial'){
+                    d_materiale::create([
+                        'folio_id' => $folioid,
+                        'material_id' => $request->material[$i],
+                        'cantidad' => $request->material_can[$i],
+                        'estado_id' => 1,
+                        ]);
+                    }
+                }
+        }
      
         if($request->hasFile('imagen_antes')){
             // $image = Image::make($request->imagen_antes);
