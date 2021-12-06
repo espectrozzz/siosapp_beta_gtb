@@ -2190,9 +2190,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      isOt: false,
       folio: '',
       idTipoFolio: '',
       tFolio: [],
@@ -2453,6 +2456,7 @@ __webpack_require__.r(__webpack_exports__);
 
           i++;
         });
+        this.isOt = this.idTipoFolio === 1 ? false : true;
         i = 0;
         this.datos[5].forEach(function (element) {
           _this3.agregarCab24();
@@ -2658,10 +2662,17 @@ __webpack_require__.r(__webpack_exports__);
 
       this.deshabilitarBotones();
       var folioModificado;
-      folioModificado = this.folio === this.datos[0][0].folio ? 0 : 1;
+      var folioId;
+
+      if (this.detalle) {
+        folioModificado = this.folio === this.datos[0][0].folio ? 0 : 1;
+        folioId = this.datos[0][0].id_folio;
+      }
+
       var formData2 = new FormData();
       var i = 0;
       formData2.append('folio', this.folio);
+      formData2.append('id_folio', folioId);
       formData2.append('tFolio', this.idTipoFolio);
       formData2.append('turno', this.tipoTurno);
       formData2.append('distrito_id', this.$store.state.selected_distrito);
@@ -2917,6 +2928,10 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
       }
+    },
+    isOtFunction: function isOtFunction() {
+      this.isOt = this.idTipoFolio === 1 ? false : true;
+      this.calcTiempo();
     }
   }
 });
@@ -4573,11 +4588,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      // Our data object that holds the Laravel paginator data
       laravelData: {},
       data: [],
       distritoData: [],
@@ -4617,43 +4630,35 @@ __webpack_require__.r(__webpack_exports__);
           _this.vacio = false;
         }
 
-        _this.data = response;
-
-        for (var i = 0; i <= response.data.data.length - 1; i++) {
-          _this.estatus_select[i] = response.data.data[i].estatus_id;
-
-          if (response.data.data[i].estatus_descripcion == 'En espera') {
-            _this.play[i] = false;
-          } else {
-            _this.play[i] = true;
-          }
-        } // console.log(this.play);
-        // console.log(this.estatus_select[1],response.data.data[1]);
-
-
-        console.log(response.data.data);
-      }, function (response) {});
+        _this.rellenarSelectEstatus(response.data.data);
+      });
     },
     getPage: function getPage(page) {
       var _this2 = this;
 
       axios.get('/consultaFolios?page=' + page).then(function (response) {
         _this2.$set(_this2.$data, 'laravelData', response.data);
-      }, function (response) {});
+
+        _this2.rellenarSelectEstatus(response.data.data);
+      });
     },
     getPreviousPage: function getPreviousPage() {
       var _this3 = this;
 
       axios.get(this.laravelData['prev_page_url']).then(function (response) {
         _this3.$set(_this3.$data, 'laravelData', response.data);
-      }, function (response) {});
+
+        _this3.rellenarSelectEstatus(response.data.data);
+      });
     },
     getNextPage: function getNextPage() {
       var _this4 = this;
 
       axios.get(this.laravelData['next_page_url']).then(function (response) {
         _this4.$set(_this4.$data, 'laravelData', response.data);
-      }, function (response) {});
+
+        _this4.rellenarSelectEstatus(response.data.data);
+      });
     },
     detalleInfo: function detalleInfo(estatus) {
       if (estatus == 5) {
@@ -4668,14 +4673,16 @@ __webpack_require__.r(__webpack_exports__);
           searchFolio: this.searchFolio,
           searchDistrito: this.$store.state.selected_distrito,
           searchCluster: this.$store.state.selected_cluster,
-          searchEstatus: this.estatus_select,
+          searchEstatus: this.estatus_selected,
           searchFechaIni: this.fechaInicial,
           searchFechaFin: this.fechaFinal,
           searchTipoFolio: this.tFolio_select
         }
       }).then(function (response) {
         _this5.$set(_this5.$data, 'laravelData', response.data);
-      }, function (response) {});
+
+        _this5.rellenarSelectEstatus(response.data.data);
+      });
     },
     getComboSearch: function getComboSearch() {
       var _this6 = this;
@@ -4695,14 +4702,14 @@ __webpack_require__.r(__webpack_exports__);
 
       this.searchFolio = '';
       this.$store.state.selected_distrito = '';
-      this.$store.state.selected_cluster = '';
-      this.estatus_select = '';
+      this.$store.state.selected_cluster = ''; //  this.estatus_select                    =   '';
+
       this.fechaInicial = '';
       this.fechaFinal = '';
       this.tFolio_select = '';
       axios.get('/consultaFolios').then(function (response) {
         _this7.$set(_this7.$data, 'laravelData', response.data);
-      }, function (response) {});
+      });
     },
     enviarScript: function enviarScript(id) {
       this.control_botones = true;
@@ -4777,6 +4784,17 @@ __webpack_require__.r(__webpack_exports__);
             console.log(response.data);
           });
           this.getContactoList();
+        }
+      }
+    },
+    rellenarSelectEstatus: function rellenarSelectEstatus(data) {
+      for (var i = 0; i <= data.length - 1; i++) {
+        this.estatus_select[i] = data[i].estatus_id;
+
+        if (data[i].estatus_descripcion == 'En espera') {
+          this.play[i] = false;
+        } else {
+          this.play[i] = true;
         }
       }
     }
@@ -32675,7 +32693,7 @@ var render = function() {
                         ? $$selectedVal
                         : $$selectedVal[0]
                     },
-                    _vm.calcTiempo
+                    _vm.isOtFunction
                   ]
                 }
               },
@@ -32832,192 +32850,205 @@ var render = function() {
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "form-group" }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "form-floating col-md-4" }, [
-            _c(
-              "select",
-              {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.falla_select,
-                    expression: "falla_select"
-                  }
-                ],
-                staticClass: "form-select",
-                attrs: { name: "falla", id: "falla", disabled: _vm.role == 1 },
-                on: {
-                  change: function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.falla_select = $event.target.multiple
-                      ? $$selectedVal
-                      : $$selectedVal[0]
-                  }
-                }
-              },
-              [
-                _c("option", { attrs: { value: "" } }, [
-                  _vm._v("Seleccione una falla")
-                ]),
-                _vm._v(" "),
-                _vm._l(_vm.cFalla, function(value, index) {
-                  return _c(
-                    "option",
-                    { key: index, domProps: { value: _vm.cFalla[index].id } },
-                    [
-                      _vm._v(
-                        "\n                        " +
-                          _vm._s(_vm.cFalla[index].descripcion) +
-                          "\n                    "
-                      )
-                    ]
-                  )
-                })
-              ],
-              2
-            ),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "falla" } }, [_vm._v("Falla")])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-floating col-md-4" }, [
-            _c(
-              "select",
-              {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.causa_select,
-                    expression: "causa_select"
-                  }
-                ],
-                staticClass: "form-select",
-                attrs: {
-                  name: "cAfectacion",
-                  id: "cAfectacion",
-                  required: "",
-                  disabled: _vm.role == 1
-                },
-                on: {
-                  change: function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.causa_select = $event.target.multiple
-                      ? $$selectedVal
-                      : $$selectedVal[0]
-                  }
-                }
-              },
-              [
-                _c("option", { attrs: { value: "" } }, [
-                  _vm._v("Seleccione una causa")
-                ]),
-                _vm._v(" "),
-                _vm._l(_vm.cCausa, function(value, index) {
-                  return _c(
-                    "option",
-                    { key: index, domProps: { value: _vm.cCausa[index].id } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.cCausa[index].descripcion) +
-                          "\n                "
-                      )
-                    ]
-                  )
-                })
-              ],
-              2
-            ),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "cAfectacion" } }, [
-              _vm._v("Causa/Afectacion")
-            ])
-          ]),
-          _vm._v(" "),
-          this.form != 2
-            ? _c("div", { staticClass: "form-floating col-4 col-md-1" }, [
-                _c("input", {
+        _c(
+          "div",
+          { staticClass: "row" },
+          [
+            _c("div", { staticClass: "form-floating col-md-4" }, [
+              _c(
+                "select",
+                {
                   directives: [
                     {
                       name: "model",
                       rawName: "v-model",
-                      value: _vm.numCliente,
-                      expression: "numCliente"
+                      value: _vm.falla_select,
+                      expression: "falla_select"
                     }
                   ],
-                  staticClass: "form-control positivo",
+                  staticClass: "form-select",
                   attrs: {
-                    id: "nClientes",
-                    type: "number",
-                    pattern: "^[0-9]+",
-                    min: "0",
-                    name: "nClientes",
+                    name: "falla",
+                    id: "falla",
                     disabled: _vm.role == 1
                   },
-                  domProps: { value: _vm.numCliente },
                   on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.numCliente = $event.target.value
+                    change: function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.falla_select = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
                     }
                   }
-                }),
-                _vm._v(" "),
-                _c("label", { attrs: { for: "nClientes" } }, [
-                  _vm._v("Clientes Afectados")
-                ])
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-floating col-6 col-md-3" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.ot,
-                  expression: "ot"
-                }
-              ],
-              staticClass: "form-control positivo",
-              attrs: {
-                id: "ot",
-                type: "text",
-                name: "ot",
-                disabled: _vm.role == 1
-              },
-              domProps: { value: _vm.ot },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.ot = $event.target.value
-                }
-              }
-            }),
+                },
+                [
+                  _c("option", { attrs: { value: "" } }, [
+                    _vm._v("Seleccione una falla")
+                  ]),
+                  _vm._v(" "),
+                  _vm._l(_vm.cFalla, function(value, index) {
+                    return _c(
+                      "option",
+                      { key: index, domProps: { value: _vm.cFalla[index].id } },
+                      [
+                        _vm._v(
+                          "\n                        " +
+                            _vm._s(_vm.cFalla[index].descripcion) +
+                            "\n                    "
+                        )
+                      ]
+                    )
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c("label", { attrs: { for: "falla" } }, [_vm._v("Falla")])
+            ]),
             _vm._v(" "),
-            _c("label", { attrs: { for: "ot" } }, [_vm._v("OT")])
-          ])
-        ])
+            _c("div", { staticClass: "form-floating col-md-4" }, [
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.causa_select,
+                      expression: "causa_select"
+                    }
+                  ],
+                  staticClass: "form-select",
+                  attrs: {
+                    name: "cAfectacion",
+                    id: "cAfectacion",
+                    required: "",
+                    disabled: _vm.role == 1
+                  },
+                  on: {
+                    change: function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.causa_select = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    }
+                  }
+                },
+                [
+                  _c("option", { attrs: { value: "" } }, [
+                    _vm._v("Seleccione una causa")
+                  ]),
+                  _vm._v(" "),
+                  _vm._l(_vm.cCausa, function(value, index) {
+                    return _c(
+                      "option",
+                      { key: index, domProps: { value: _vm.cCausa[index].id } },
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(_vm.cCausa[index].descripcion) +
+                            "\n                "
+                        )
+                      ]
+                    )
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c("label", { attrs: { for: "cAfectacion" } }, [
+                _vm._v("Causa/Afectacion")
+              ])
+            ]),
+            _vm._v(" "),
+            this.form != 2
+              ? _c("div", { staticClass: "form-floating col-4 col-md-1" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.numCliente,
+                        expression: "numCliente"
+                      }
+                    ],
+                    staticClass: "form-control positivo",
+                    attrs: {
+                      id: "nClientes",
+                      type: "number",
+                      pattern: "^[0-9]+",
+                      min: "0",
+                      name: "nClientes",
+                      disabled: _vm.role == 1
+                    },
+                    domProps: { value: _vm.numCliente },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.numCliente = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", { attrs: { for: "nClientes" } }, [
+                    _vm._v("Clientes Afectados")
+                  ])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c("transition", { attrs: { name: "slide-fade" } }, [
+              _vm.isOt
+                ? _c("div", { staticClass: "form-floating col-6 col-md-3" }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.ot,
+                          expression: "ot"
+                        }
+                      ],
+                      staticClass: "form-control positivo",
+                      attrs: {
+                        id: "ot",
+                        type: "text",
+                        name: "ot",
+                        disabled: _vm.role == 1
+                      },
+                      domProps: { value: _vm.ot },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.ot = $event.target.value
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("label", { attrs: { for: "ot" } }, [_vm._v("OT")])
+                  ])
+                : _vm._e()
+            ])
+          ],
+          1
+        )
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "form-group" }, [
