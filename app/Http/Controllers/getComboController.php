@@ -140,7 +140,9 @@ class getComboController extends Controller
 
     public function ComboTecnico(Request $request){
         if($request->ajax()){
-        $tecnicos = c_tecnico::where('supervisor_id',$request->tecnico_id)->get();
+        $tecnicos = c_tecnico::where('supervisor_id',$request->tecnico_id)
+                            ->where('estado_id', 1)
+                            ->get();
         }
         return response()->json($tecnicos);
     }
