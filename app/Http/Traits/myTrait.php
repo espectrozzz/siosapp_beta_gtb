@@ -102,7 +102,7 @@ $bddUbicacion->save();
             }
             $mensaje = $mensaje. '*FECHA_HR_FINAL_DE_ REPARACION*: '. $consulta[0]->activacion. "\n".
             '*ATIENDE_NOM_TEC*: '. $consulta[0]->tecnico. "\n".
-            '*PROVEEDOR*:iOS'. "\n".
+            '*PROVEEDOR*:GTB'. "\n".
             '*SUPERVISOR*: '. $consulta[0]->supervisorttp. "\n".
             '*ATENDIO_DESP*: '. $consulta[0]->despachottp. "\n".
             '*JUSTIFICACIÓN DEL SLA*: ';
