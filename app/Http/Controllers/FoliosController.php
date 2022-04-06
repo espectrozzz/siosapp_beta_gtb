@@ -513,9 +513,10 @@ class FoliosController extends Controller
 
     imagenes($request,$analisis->id);
 
-        if($analisis->tipo_folio == 1){
-             $this->enviarScript($analisis->id, 1);
-        }
+        // if($analisis->tipo_folio == 1){
+        //      $this->enviarScript($analisis->id, 1);
+        // } se comenta por orden de GTB
+
         activity()->useLog('finalize')
                   ->withProperties(['folio' => $analisis->folio])
                   ->log('finaliza folio');
